@@ -4,6 +4,8 @@ st.title("Course Management App")
 st.header("Assignments")
 st.subheader("Assignments Manager")
 
+next_assignment_id_number = 3
+
 st.divider()
 
 #load assignments
@@ -35,6 +37,9 @@ title = st.text_input("Title",placeholder="ex. Homework 1",
 description = st.text_area("Description",placeholder="ex. database design...")
 due_date = st.date_input("Due Date")
 assignments_type = st.radio("Type",["Homework", "Lab"])
+
+points = st.number_input("Points")
+
 #assignments_type2 = st.selectbox("Type", ["Homework", "Lab","Other"])
 #if assignments_type2 == "Other":
  #   assignments_type2 = st.text_input("Assingment Type")
@@ -45,6 +50,31 @@ with st.expander("Assignment Preview",expanded= True):
     st.markdown("## Live Preview")
     st.markdown(f"Title: {title}")
 
-btn_save = st.button("Save",width="stretch")
+btn_save = st.button("Save",use_container_width=True, disabled=False)
+
+import time
+
+
+
 if btn_save:
-    st.warning("Working on it!")
+    with st.spinner("Saving the Assignmnet..."):
+        time.sleep(5)
+        if not title:
+            st.warning("Enter Assignmnet Title")
+        else:
+            #Add/Create new Assignmnet
+            new_assignmnet_id = "HW" + str(next_assignment_id_number)
+            next_assignment_id_number += 1
+
+            assignments.append(
+                {
+                "id" : new_assignmnet_id,
+                "title": title,
+                "description" : description,
+                    "points" : points,
+                    "type" : assignments_type
+                }
+            )
+
+            st.success("Assignment is recorded!")
+            st.dataframe(assignments)
