@@ -3,7 +3,19 @@ import time
 import json
 from pathlib import Path
 
+
+st.set_page_config(
+    page_title="Course Manager",
+    page_icon="",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
+
+
+
+
 st.title("Course Management App")
+
 st.divider()
 
 next_assignment_id_number = 3
@@ -45,9 +57,22 @@ with tab1:
         st.dataframe(assignments)
 
     else:
-        search_title = st.selectbox("Assignmnet Titles", [])
+        titles = []
+        for assignmnet in assignments:
+            titles.append(assignmnet["title"])
 
+        if not titles:
+            st.warning("No Assignmnet is found")
+        else:
+            selected_title = st.selectbox("Assignmnet Title", titles)
 
+            for assignment in assignments:
+                if assignment["title"] == selected_title:
+                    with st.expander( "Assignment Details", expanded=True):
+                        st.markdown(f"### Ttitle: {assignment["title"]}")
+                        st.markdown(f"Description: {assignment["description"]}")
+                        st.markdown(f"Type: **{assignment["type"]}**")
+                    break
         
 with tab2:
     # Add New Assignment
@@ -105,3 +130,38 @@ with tab2:
 
                 st.success("Assignment is recorded!")
                 st.dataframe(assignments)
+
+with tab3:
+    st.markdown("# Update an Assignment")
+
+    titles = []
+    for assignment in assignments:
+        titles.append(assignment["title"])
+
+    selected_item = st.selectbox("Select an item", titles,key="search_titles")
+    
+    selected_assignment = {}
+    for assignment in assignments:
+        if assignment["title"] == selected_item:
+            selected_assignment = assignment
+            break
+
+    edit_title = st.text_input("Title", key= "edit_title", value = selected_assignment['title'])
+    edit_description = st.text_area("Description", value= selected_assignment['description'], key = "edit_description")
+
+    update_btn = st.button("Update Assignment",key="btn_update",use_container_width=True,type="primary")
+    if update_btn:
+        with st.spinner("Updating the assignment..."):
+            time.sleep(5)
+            selected_assignment['title'] = edit_title
+            selected_assignment["description"] = edit_description
+
+            with json_path.open("w",encoding="utf-8") as f:
+                json.dump(assignments,f)
+
+            st.success("Assignment is updated!")
+            
+            st.rerun()
+
+
+            st.dataframe(assignments)
