@@ -68,11 +68,21 @@ with tab1:
 
             for assignment in assignments:
                 if assignment["title"] == selected_title:
-                    with st.expander( "Assignment Details", expanded=True):
-                        st.markdown(f"### Ttitle: {assignment["title"]}")
-                        st.markdown(f"Description: {assignment["description"]}")
-                        st.markdown(f"Type: **{assignment["type"]}**")
+                    with st.expander( 'Assignment Details', expanded=True):
+                        st.markdown(f"### Ttitle: {assignment['title']}")
+                        st.markdown(f"Description: {assignment['description']}")
+                        st.markdown(f"Type: **{assignment['type']}**")
                     break
+            
+            selected_assignment = st.selectbox('Assignment Title',
+                                          options=assignments,
+                                          format_func=lambda x: f"{x['title']}",
+                                          key= 'new_assignment')
+            
+            with st.expander( 'Assignment Details', expanded=True):
+                st.markdown(f"### Ttitle: {selected_assignment['title']}")
+                st.markdown(f"Description: {selected_assignment['description']}")
+                st.markdown(f"Type: **{selected_assignment['type']}**")
         
 with tab2:
     # Add New Assignment
@@ -146,8 +156,17 @@ with tab3:
             selected_assignment = assignment
             break
 
-    edit_title = st.text_input("Title", key= "edit_title", value = selected_assignment['title'])
-    edit_description = st.text_area("Description", value= selected_assignment['description'], key = "edit_description")
+    edit_title = st.text_input("Title", value = selected_assignment['title'], 
+                               key=f"edit_title_{selected_assignment['id']}")
+    edit_description = st.text_area("Description", value= selected_assignment['description'], 
+                                    key = f"edit_description_{selected_assignment['id']}")
+    
+    type_list = ["Homework", "Lab"]
+    selected_assignmnet_type_index = type_list.index(selected_assignment['type'].capitalize())
+
+    edit_type = st.radio("Type", type_list, index=selected_assignmnet_type_index,
+                         key= f"edit_type_{selected_assignment['id']}" )
+
 
     update_btn = st.button("Update Assignment",key="btn_update",use_container_width=True,type="primary")
     if update_btn:
@@ -160,8 +179,14 @@ with tab3:
                 json.dump(assignments,f)
 
             st.success("Assignment is updated!")
-            
+            time.sleep(5)
             st.rerun()
 
 
-            st.dataframe(assignments)
+           # st.dataframe(assignments)
+
+with st.sidebar:
+    st.markdown("This is a sidebar")
+    if st.button("Log out", type="primary",use_container_width=True):
+        time.sleep(5)
+        st.success("you are being logged out")
