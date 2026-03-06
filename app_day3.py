@@ -109,7 +109,7 @@ with tab2:
         st.markdown("## Live Preview")
         st.markdown(f"Title: {title}")
 
-    btn_save = st.button("Save",use_container_width=True, disabled=False)
+    btn_save = st.button("Save",use_container_width=True, disabled=False,type="")
 
 
    
