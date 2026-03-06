@@ -7,7 +7,7 @@ from pathlib import Path
 st.set_page_config(
     page_title="Course Manager",
     page_icon="",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
@@ -40,7 +40,7 @@ assignments = [
 
 json_path = Path("assignments.json")
 
-if json_path.exists:
+if json_path.exists():
     with json_path.open("r", encoding= "utf-8") as f:
         assignments = json.load(f)
 
@@ -137,8 +137,9 @@ with tab2:
                 with json_path.open("w",encoding="utf-8") as f:
                     json.dump(assignments,f)
 
-
+                time.sleep(4)
                 st.success("Assignment is recorded!")
+                st.rerun()
                 st.dataframe(assignments)
 
 with tab3:
