@@ -98,9 +98,9 @@ else:
     st.write("---")
     st.dataframe(users)
 
-#with st.sidebar:
-    #if "logged_in" in st.session_state and st.session_state["logged_in"] != None:
-      #  user = st.session_state["user"]
-      #  st.markdown(f"Welcome {user['email']}")
-   # else:
-      #  st.markdown("Welcome! - Login")
+with st.sidebar:
+    if "logged_in" in st.session_state and st.session_state["logged_in"] != False:
+        user = st.session_state["user"]
+        st.markdown(f"Welcome {user['email']}")
+    else:
+        st.markdown("Welcome! - Login")
