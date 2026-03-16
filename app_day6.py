@@ -70,12 +70,6 @@ if json_path_assignment.exists():
         assignments = json.load(f)
 
 
-
-
-
-
-
-
 if st.session_state["role"] == "Instructor":
     if st.session_state["page"] == "home":
         st.markdown("Welcome! This is the instructor Dashboard")
