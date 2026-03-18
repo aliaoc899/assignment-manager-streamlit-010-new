@@ -1,0 +1,1 @@
+[{"item_id": 1, "name": "Espresso", "unit_price": 2.5, "stock": 39}, {"item_id": 2, "name": "Latte", "unit_price": 4.25, "stock": 23}, {"item_id": 3, "name": "Cold Brew", "unit_price": 3.75, "stock": 30}, {"item_id": 4, "name": "Mocha", "unit_price": 4.5, "stock": 20}, {"item_id": 5, "name": "Blueberry Muffin", "unit_price": 2.95, "stock": 18}]
