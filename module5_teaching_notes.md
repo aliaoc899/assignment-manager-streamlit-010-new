@@ -449,7 +449,160 @@ def edit_assignment_bad(assignment_id, json_path):
 
 ---
 
-## 6. Foreshadowing Classes
+## 6. Next Step: Type Hinting, Method Contracts, and Validation
+
+Now that our code is broken into clean methods, we can improve the *quality* of those methods by making them easier to read, safer to call, and harder to misuse.
+
+Two powerful ideas help with this:
+1. **Type Hinting:** Clearly document what data types a method expects and returns.
+2. **Method Contracts and Validation:** Define the rules for what inputs are allowed, then enforce those rules inside the method.
+
+### 6.1 Type Hinting
+
+Type hints are extra annotations we add to parameters and return values. They do not change how Python runs, but they make our code much easier to understand.
+
+```python
+from pathlib import Path
+
+def load_data(json_path: Path) -> list:
+    """Loads assignments from standard JSON."""
+    if json_path.exists():
+        with open(json_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def save_data(assignments: list, json_path: Path) -> None:
+    """Saves assignments array to JSON."""
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(assignments, f, indent=4)
+```
+
+**What do these hints mean?**
+*   `json_path: Path` means the parameter should be a `Path` object.
+*   `assignments: list` means the parameter should be a Python list.
+*   `-> list` means the method returns a list.
+*   `-> None` means the method does not return a useful value. It just performs an action.
+
+**Why use type hints?**
+*   They make the method signature easier to read.
+*   They help teammates understand what data belongs in each parameter.
+*   They help editors and type-checking tools catch mistakes earlier.
+
+#### Allowing `None` as a Parameter Value
+
+Sometimes a parameter is allowed to have no real value yet. In Python type hints, we can show that by including `None` in the type.
+
+```python
+def save_data(assignments: list, json_path: str | None) -> None:
+    if json_path is None:
+        print("No file path was provided.")
+        return
+
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(assignments, f, indent=4)
+```
+
+**What does `str | None` mean?**
+*   `str` means the parameter can hold a string
+*   `None` means the parameter can also intentionally hold "no value"
+*   `str | None` means either one is acceptable
+
+This is useful when your method may or may not receive a path yet.
+
+**Important:** `str | None` does **not** mean the argument is optional to pass in. It only means that if the caller provides a value, that value is allowed to be either a string or `None`.
+
+If you also want the parameter to automatically start as `None`, then you would write:
+
+```python
+def save_data(assignments: list, json_path: str | None = None) -> None:
+    ...
+```
+
+That version means:
+*   the caller may leave out `json_path`
+*   if they do, Python will automatically use `None`
+
+Here is another example using our Service Layer:
+
+```python
+def add_assignment(
+    assignments: list,
+    title: str,
+    description: str,
+    points: int,
+    assignment_type: str
+) -> None:
+    import uuid
+
+    new_assignment = {
+        "id": str(uuid.uuid4()),
+        "title": title,
+        "description": description,
+        "points": points,
+        "type": assignment_type
+    }
+    assignments.append(new_assignment)
+```
+
+This signature acts like a quick summary of the method's expectations before you even read its body.
+
+### 6.2 Method Contracts and Validation
+
+A **method contract** is the agreement a method makes with the rest of your program:
+*   What inputs does it expect?
+*   What output does it return?
+*   What rules must be true before it should continue?
+
+For example, our `add_assignment()` method should probably assume:
+*   `title` cannot be blank
+*   `points` should not be negative
+*   `assignment_type` should be one of our allowed options
+
+That means the Service Layer should not blindly trust the UI. It should validate the inputs before saving anything.
+
+```python
+def add_assignment(
+    assignments: list,
+    title: str,
+    description: str,
+    points: int,
+    assignment_type: str
+) -> None:
+    import uuid
+
+    allowed_types = ["homework", "lab", "other"]
+
+    if not title.strip():
+        raise ValueError("Title is required.")
+
+    if points < 0:
+        raise ValueError("Points must be zero or greater.")
+
+    if assignment_type.lower() not in allowed_types:
+        raise ValueError("Assignment type is invalid.")
+
+    new_assignment = {
+        "id": str(uuid.uuid4()),
+        "title": title,
+        "description": description,
+        "points": points,
+        "type": assignment_type.lower()
+    }
+    assignments.append(new_assignment)
+```
+
+**Why is validation important?**
+*   It protects our data from bad input.
+*   It keeps business rules in the Service Layer instead of scattering them across the UI.
+*   It makes methods safer to reuse in the future from a script, test file, API, or another frontend.
+
+**Real-world design lesson:** The UI can help the user, but the Service Layer should protect the system.
+
+That means even if a Streamlit form forgets to check something, our method contract still keeps the data clean.
+
+---
+
+## 7. Foreshadowing Classes
 
 Methods definitely cleaned up our code! But notice how we always have to pass `assignments` around? 
 `save_data(assignments, path)` 

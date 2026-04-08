@@ -34,10 +34,9 @@ assignments = [
 json_path = Path("assignments.json")
 
 
-def load_data():
-    if json_path.exists():
-        with open(json_path, "r") as f:
-            return json.load(f)
+if json_path.exists():
+    with open(json_path, "r") as f:
+        assignments = json.load(f)
     
 
 
