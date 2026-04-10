@@ -42,7 +42,6 @@ def edit_assignment(assignments: list) -> list:
             break
     return assignments
                                                               
-
 #UI Layer
 def render_dashboard(assignments):
     col1,col2 = st.columns([3,1])
@@ -68,7 +67,6 @@ def render_dashboard(assignments):
             st.divider()
 
 
-
 def render_add_edit_new_assignment(assignments, json_path):
     col1,col2 = st.columns([3,1])
 
@@ -79,10 +77,13 @@ def render_add_edit_new_assignment(assignments, json_path):
             st.session_state["page"] = "Assignment Dashboard"
             st.rerun()
 
-    st.session_state['draft']['title'] = st.text_input("Title" , key="title_txt_input",value=st.session_state['draft']['title'])
-    st.session_state['draft']['description'] = st.text_area("Description", key="description_txt_input", placeholder="normalization is covered here",
-                            help="Here you are entering the assignment details", value= st.session_state['draft']['description'])
-    st.session_state["draft"]['points'] = st.number_input("Points", key="points_input",value=st.session_state['draft']['points'])
+    st.session_state['draft']['title'] = st.text_input("Title" , key="title_txt_input", value=st.session_state['draft'].get('title', ''))
+    st.session_state['draft']['description'] = st.text_area("Description", key="description_txt_input",
+                                                            value= st.session_state['draft'].get('description', ''),
+                                                             placeholder="normalization is covered here",
+                            help="Here you are entering the assignment details")
+    st.session_state["draft"]['points'] = st.number_input("Points", key="points_input",
+                                                          value = st.session_state['draft'].get('points', 0))
     
     options = ["Select an option", "Homework", "Lab", "other"]
     draft_assignment_type = st.session_state['draft'].get('type')
@@ -116,8 +117,6 @@ def render_add_edit_new_assignment(assignments, json_path):
             st.session_state["draft"] = {}
             st.session_state['page'] = "Assignment Dashboard"
             st.rerun()
-
-
 
 
 def main():
