@@ -32,8 +32,7 @@ def add_new_assignment(assignments: list) -> list:
     
     return assignments
 
-
-def edit_new_assignment(assignments: list) -> list:
+def edit_assignment(assignments: list) -> list:
     for assignment in assignments:
         if assignment["id"] == st.session_state["draft"]['id']:
             assignment['title'] = st.session_state['draft']['title']
@@ -97,7 +96,7 @@ def render_add_edit_new_assignment(assignments, json_path):
             if st.session_state["page"] == "Add New Assignment":
                 assignments = add_new_assignment(assignments)
             elif st.session_state["page"] == "Edit Assignment":
-                assignments = edit_new_assignment(assignments)
+                assignments = edit_assignment(assignments)
 
 
             #Data Layer
