@@ -5,7 +5,7 @@ from pathlib import Path
 import uuid
 
 #Data layer
-def load_data(json_path):
+def load_data(json_path) -> list:
     if json_path.exists():
         with open(json_path, "r") as f:
             assignments = json.load(f)
@@ -14,23 +14,35 @@ def load_data(json_path):
 
     return assignments
 
-def save_data(assignments, json_path):
+def save_data(assignments: list, json_path) -> None:
     with open(json_path, "w") as f:
         json.dump(assignments,f)
     
 # Service Layer
-def add_new_assignment(assignments,title, description, points, type):
+def add_new_assignment(assignments: list) -> list:
     assignments.append(
                 {
                     "id" : str(uuid.uuid4()),
-                    "title": title,
-                    'description' : description,
-                    'points': points,
-                    'type': type
+                    "title": st.session_state['draft']['title'],
+                    'description' : st.session_state['draft']['description'],
+                    'points': st.session_state['draft']['points'],
+                    'type': st.session_state['draft']['type']
                 }
             )
     
     return assignments
+
+
+def edit_new_assignment(assignments: list) -> list:
+    for assignment in assignments:
+        if assignment["id"] == st.session_state["draft"]['id']:
+            assignment['title'] = st.session_state['draft']['title']
+            assignment['description'] = st.session_state['draft']['description']
+            assignment['points'] =  st.session_state['draft']['points']
+            assignment['type'] = st.session_state['draft']['type']
+            break
+    return assignments
+                                                              
 
 #UI Layer
 def render_dashboard(assignments):
@@ -46,9 +58,19 @@ def render_dashboard(assignments):
             st.rerun()
 
     with st.container(border= True):
-        st.dataframe(assignments)
+        for assignment in assignments:
+            with st.container(border=True):
+                st.markdown(f"Title: {assignment['title']}")
+                st.markdown(f"Description: {assignment['description']}")
+                if st.button("Edit", key = f"edit_btn_{assignment['id']}", type="primary",use_container_width=True):
+                    st.session_state["draft"] = assignment
+                    st.session_state["page"] = "Edit Assignment"
+                    st.rerun()
+            st.divider()
 
-def render_add_new_assignment(assignments, json_path):
+
+
+def render_add_edit_new_assignment(assignments, json_path):
     col1,col2 = st.columns([3,1])
 
     with col1:
@@ -58,10 +80,10 @@ def render_add_new_assignment(assignments, json_path):
             st.session_state["page"] = "Assignment Dashboard"
             st.rerun()
 
-    st.session_state['draft']['title'] = st.text_input("Title" , key="title_txt_input")
+    st.session_state['draft']['title'] = st.text_input("Title" , key="title_txt_input",value=st.session_state['draft']['title'])
     st.session_state['draft']['description'] = st.text_area("Description", key="description_txt_input", placeholder="normalization is covered here",
-                            help="Here you are entering the assignment details")
-    st.session_state["draft"]['points'] = st.number_input("Points", key="points_input")
+                            help="Here you are entering the assignment details", value= st.session_state['draft']['description'])
+    st.session_state["draft"]['points'] = st.number_input("Points", key="points_input",value=st.session_state['draft']['points'])
     st.session_state['draft']['assignment_type'] = st.selectbox("Type", 
                                                                 ["Select an option", "Homework", "Lab", "other"],
                                                                 key="type_selector")
@@ -71,19 +93,23 @@ def render_add_new_assignment(assignments, json_path):
             time.sleep(3)
 
             #Add new assignment to the assignments
-            assignments = add_new_assignment(assignments, 
-                                             st.session_state['draft']['title'],
-                                             st.session_state['draft']['description'],
-                                             st.session_state["draft"]['points'],
-                                             st.session_state['draft']['assignment_type'] )
+            # service Layer
+            if st.session_state["page"] == "Add New Assignment":
+                assignments = add_new_assignment(assignments)
+            elif st.session_state["page"] == "Edit Assignment":
+                assignments = edit_new_assignment(assignments)
 
+
+            #Data Layer
             save_data(assignments, json_path=json_path)
 
             st.success("Assignment is recorded.")
             time.sleep(3)
-
+            st.session_state["draft"] = {}
             st.session_state['page'] = "Assignment Dashboard"
             st.rerun()
+
+
 
 
 def main():
@@ -124,9 +150,9 @@ def main():
     if st.session_state["page"] == "Assignment Dashboard":
         render_dashboard(assignments=assignments)
     elif st.session_state["page"] == "Add New Assignment":
-        render_add_new_assignment(assignments=assignments, json_path=json_path)
+        render_add_edit_new_assignment(assignments=assignments, json_path=json_path)
     elif st.session_state["page"] == "Edit Assignment":
-        pass
+        render_add_edit_new_assignment(assignments=assignments,json_path=json_path)
     
 
 if __name__ == "__main__":
