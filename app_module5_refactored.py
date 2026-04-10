@@ -83,9 +83,18 @@ def render_add_edit_new_assignment(assignments, json_path):
     st.session_state['draft']['description'] = st.text_area("Description", key="description_txt_input", placeholder="normalization is covered here",
                             help="Here you are entering the assignment details", value= st.session_state['draft']['description'])
     st.session_state["draft"]['points'] = st.number_input("Points", key="points_input",value=st.session_state['draft']['points'])
-    st.session_state['draft']['assignment_type'] = st.selectbox("Type", 
-                                                                ["Select an option", "Homework", "Lab", "other"],
-                                                                key="type_selector")
+    
+    options = ["Select an option", "Homework", "Lab", "other"]
+    draft_assignment_type = st.session_state['draft'].get('type')
+    if draft_assignment_type in options:
+        draft_assignment_type_index = options.index(draft_assignment_type)
+    else: 
+        draft_assignment_type_index = 0
+
+    st.session_state['draft']['type'] = st.selectbox("Type", 
+                                                                options,
+                                                                key="type_selector",
+                                                                index=draft_assignment_type_index)
     
     if st.button("Save", key="save_btn", type="primary",use_container_width=True):
         with st.spinner("In progress..."):
