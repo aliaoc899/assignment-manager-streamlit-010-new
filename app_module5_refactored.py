@@ -77,7 +77,8 @@ def render_add_edit_new_assignment(assignments, json_path):
             st.session_state["page"] = "Assignment Dashboard"
             st.rerun()
 
-    st.session_state['draft']['title'] = st.text_input("Title" , key="title_txt_input", value=st.session_state['draft'].get('title', ''))
+    st.session_state['draft']['title'] = st.text_input("Title" , key="title_txt_input", 
+                                                       value=st.session_state['draft'].get('title', ''))
     st.session_state['draft']['description'] = st.text_area("Description", key="description_txt_input",
                                                             value= st.session_state['draft'].get('description', ''),
                                                              placeholder="normalization is covered here",
@@ -92,8 +93,7 @@ def render_add_edit_new_assignment(assignments, json_path):
     else: 
         draft_assignment_type_index = 0
 
-    st.session_state['draft']['type'] = st.selectbox("Type", 
-                                                                options,
+    st.session_state['draft']['type'] = st.selectbox("Type", options,
                                                                 key="type_selector",
                                                                 index=draft_assignment_type_index)
     
