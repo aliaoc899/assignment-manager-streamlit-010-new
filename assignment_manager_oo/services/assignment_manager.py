@@ -16,7 +16,7 @@ class AssignmentManager:
         
         allowed_types = ["Homework", "Lab"]
 
-        if assignment_type.lower() not in allowed_types:
+        if assignment_type not in allowed_types:
             raise ValueError("assignment type is invalid")
         
         new_assignment = {

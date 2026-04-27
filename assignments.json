@@ -1,1 +1,7 @@
-[{"id": "HW1", "title": "Intro to Database", "description": "basics of database design", "points": 100, "type": "homework"}, {"id": "HW2", "title": "Normalization", "description": "normalizing", "points": 100, "type": "homework"}, {"id": "db1d89d8-9b62-470d-8434-1bb5c7654706", "title": "new assignmnet", "description": "new", "points": 100.0, "type": "Homework"}]
+[{"id": "HW1", "title": "Intro to Database", 
+"description": "basics of database design", 
+"points": 100, "type": "homework"}, 
+{"id": "HW2", "title": "Normalization",
+ "description": "normalizing", "points": 100,
+  "type": "homework"},
+   {"id": "db1d89d8-9b62-470d-8434-1bb5c7654706", "title": "new assignmnet", "description": "new", "points": 100.0, "type": "Homework"}]
